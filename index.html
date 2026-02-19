@@ -33,43 +33,47 @@
             object-fit: contain;
             margin-bottom: 40px;
         }
-        #g_button {
-            margin-top: 20px;
-            width: 280px; /* Ajusta si quieres más ancho */
+        .custom-button {
+            padding: 14px 32px;
+            background-color: #6b4c2e;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 20px;
+            font-family: 'Playfair Display', Georgia, serif;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(107, 76, 46, 0.3);
+            position: relative;
+            z-index: 2;
         }
-        /* Oculta elementos de Google que no queremos y estiliza el botón */
-        #g_button div[role="button"] {
-            background-color: #6b4c2e !important; /* Marrón de tu logo */
-            color: white !important;
-            border: none !important;
-            border-radius: 30px !important;
-            box-shadow: 0 4px 15px rgba(107, 76, 46, 0.3) !important;
-            font-family: 'Playfair Display', Georgia, serif !important;
-            font-size: 20px !important;
-            padding: 12px 24px !important;
-            transition: all 0.3s ease !important;
-            height: auto !important;
-            line-height: 1.5 !important;
+        .custom-button:hover {
+            background-color: #8b5a3e;
+            transform: translateY(-2px);
         }
-        #g_button div[role="button"]:hover {
-            background-color: #8b5a3e !important;
-            transform: translateY(-2px) !important;
+        .custom-button:active {
+            transform: translateY(1px);
         }
-        #g_button div[role="button"] span {
-            font-weight: 700 !important; /* Más bold para elegancia */
+        #g_button_hidden {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+            width: 1px;
+            height: 1px;
         }
-        /* Oculta el logo G si quieres (opcional, pero recomendado dejarlo para autenticidad) */
-        /* #g_button svg { display: none !important; } */  /* Descomenta si quieres quitar la G */
     </style>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
     <div class="container">
         <img src="logo y firma.png" alt="Umbral">
-        <div id="g_button"></div> <!-- Botón oficial de Google renderizado aquí -->
+        <button class="custom-button" onclick="triggerGoogleSignIn()">Ingresar</button>
+        <div id="g_button_hidden"></div> <!-- Botón oculto de Google -->
     </div>
 
     <script>
+        let googleButtonElement = null;
+
         function handleCredentialResponse(response) {
             const payload = parseJwt(response.credential);
             const email = payload.email.toLowerCase();
@@ -96,7 +100,6 @@
             // Agrega más cuando tengas
         };
 
-        // Renderiza el botón oficial de Google con estilo personalizado
         function initGoogleSignIn() {
             google.accounts.id.initialize({
                 client_id: '851862437693-l8fh38qhljlaceait1o0cc52m1ofkg4i.apps.googleusercontent.com',
@@ -105,19 +108,31 @@
             });
 
             google.accounts.id.renderButton(
-                document.getElementById("g_button"),
+                document.getElementById("g_button_hidden"),
                 {
                     type: "standard",
                     theme: "outline",
                     size: "large",
-                    text: "signin",           // "Sign in" o "Continue with"
+                    text: "signin",
                     shape: "pill",
-                    logo_alignment: "left",
                     width: 280
                 }
             );
+
+            // Guardamos la referencia al botón real de Google
+            googleButtonElement = document.querySelector('#g_button_hidden div[role="button"]');
         }
 
+        function triggerGoogleSignIn() {
+            if (!googleButtonElement) {
+                initGoogleSignIn(); // Inicializa si aún no se hizo
+                setTimeout(triggerGoogleSignIn, 500); // Reintenta después de render
+                return;
+            }
+            googleButtonElement.click(); // Simula clic en el botón oculto de Google
+        }
+
+        // Inicializa al cargar la página (necesario para que esté listo)
         window.onload = function() {
             initGoogleSignIn();
         };
