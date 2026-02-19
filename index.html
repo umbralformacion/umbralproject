@@ -32,24 +32,13 @@
             object-fit: contain;
             margin-bottom: 40px;
         }
-        button {
-            padding: 14px 32px;
-            background-color: #6b4c2e;
-            color: white;
-            border: none;
-            border-radius: 30px;
-            cursor: pointer;
-            font-size: 20px;
-            font-family: Georgia, serif;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(107, 76, 46, 0.3);
+        #g_button {
+            margin-top: 20px;
         }
-        button:hover {
-            background-color: #8b5a3e;
-            transform: translateY(-2px);
-        }
-        button:active {
-            transform: translateY(1px);
+        /* Puedes personalizar más el botón de Google aquí si quieres */
+        #g_button div {
+            border-radius: 30px !important;
+            box-shadow: 0 4px 15px rgba(107, 76, 46, 0.3) !important;
         }
     </style>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -57,55 +46,63 @@
 <body>
     <div class="container">
         <img src="logo y firma.png" alt="Umbral">
-        <button onclick="handleSignIn()">Ingresar</button>
+        <div id="g_button"></div> <!-- Aquí se renderiza el botón oficial de Google -->
     </div>
 
-<script>
-    let googleInitialized = false; // Flag para inicializar solo una vez
-
-    function initGoogleSignIn() {
-        if (googleInitialized) return;
-        googleInitialized = true;
-
-        google.accounts.id.initialize({
-            client_id: '851862437693-l8fh38qhljlaceait1o0cc52m1ofkg4i.apps.googleusercontent.com',
-            callback: handleCredentialResponse,
-            auto_select: false  // Desactiva auto-select automático
-            use_fedcm_for_prompt: false  // ← Esta línea evita que FedCM bloquee el prompt
-        });
-    }
-
-    function handleSignIn() {
-        initGoogleSignIn(); // Inicializa solo cuando el usuario clica
-        google.accounts.id.prompt(); // Muestra el prompt/popup manualmente
-    }
-
-    // NO llamamos prompt() en onload – eso evita el popup automático al cargar
-
-    const siteMap = {
-        'ch3rryn3gro@gmail.com': 'https://sites.google.com/view/umbral-mia',
-        'umbralformacion@gmail.com': 'https://sites.google.com/view/umbral-mia',
-        // Agrega más cuando tengas
-    };
-
-    function handleCredentialResponse(response) {
-        const payload = parseJwt(response.credential);
-        const email = payload.email.toLowerCase();
-        
-        if (siteMap[email]) {
-            window.location.href = siteMap[email];
-        } else {
-            alert('Tu correo (' + email + ') no está registrado en Umbral.\nContacta a la academia.');
+    <script>
+        function handleCredentialResponse(response) {
+            const payload = parseJwt(response.credential);
+            const email = payload.email.toLowerCase();
+            
+            if (siteMap[email]) {
+                window.location.href = siteMap[email];
+            } else {
+                alert('Tu correo (' + email + ') no está registrado en Umbral.\nContacta a la academia.');
+            }
         }
-    }
 
-    function parseJwt(token) {
-        const base64Url = token.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join(''));
-        return JSON.parse(jsonPayload);
-    }
-</script>
+        function parseJwt(token) {
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            return JSON.parse(jsonPayload);
+        }
 
+        const siteMap = {
+            'ch3rryn3gro@gmail.com': 'https://sites.google.com/view/umbral-mia',
+            'umbralformacion@gmail.com': 'https://sites.google.com/view/umbral-mia',
+            // Agrega más alumnos aquí cuando los tengas
+            // 'alumno3@example.com': 'https://sites.google.com/view/otro-site',
+        };
+
+        // Inicializa Google Sign-In y renderiza el botón oficial
+        function initGoogleSignIn() {
+            google.accounts.id.initialize({
+                client_id: '851862437693-l8fh38qhljlaceait1o0cc52m1ofkg4i.apps.googleusercontent.com',
+                callback: handleCredentialResponse,
+                auto_select: false
+            });
+
+            google.accounts.id.renderButton(
+                document.getElementById("g_button"),
+                {
+                    type: "standard",
+                    theme: "outline",
+                    size: "large",
+                    text: "signin_with",      // puedes cambiar a "continue_with" o "signin"
+                    shape: "pill",            // redondeado como tu estilo anterior
+                    logo_alignment: "left",
+                    width: 300                // ajusta ancho si quieres más grande
+                }
+            );
+        }
+
+        // Llama a la inicialización una vez que la página carga
+        window.onload = function() {
+            initGoogleSignIn();
+        };
+    </script>
+</body>
+</html>
