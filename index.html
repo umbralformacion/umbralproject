@@ -60,55 +60,51 @@
         <button onclick="handleSignIn()">Ingresar</button>
     </div>
 
-    <script>
-        window.onload = function() {
-            google.accounts.id.initialize({
-                client_id: '851862437693-l8fh38qhljlaceait1o0cc52m1ofkg4i.apps.googleusercontent.com',
-                callback: handleCredentialResponse,
-                auto_select: true
-            });
-            google.accounts.id.prompt(); // Intenta login automático si ya estás logueado en Google
-        };
+<script>
+    let googleInitialized = false; // Flag para inicializar solo una vez
 
-        function handleSignIn() {
-            google.accounts.id.prompt();
+    function initGoogleSignIn() {
+        if (googleInitialized) return;
+        googleInitialized = true;
+
+        google.accounts.id.initialize({
+            client_id: '851862437693-l8fh38qhljlaceait1o0cc52m1ofkg4i.apps.googleusercontent.com',
+            callback: handleCredentialResponse,
+            auto_select: false  // Desactiva auto-select automático
+            // Opcional: use_fedcm_for_prompt: false  // Si quieres forzar flujo legacy y evitar FedCM cooldowns
+        });
+    }
+
+    function handleSignIn() {
+        initGoogleSignIn(); // Inicializa solo cuando el usuario clica
+        google.accounts.id.prompt(); // Muestra el prompt/popup manualmente
+    }
+
+    // NO llamamos prompt() en onload – eso evita el popup automático al cargar
+
+    const siteMap = {
+        'ch3rryn3gro@gmail.com': 'https://sites.google.com/view/umbral-mia',
+        'umbralformacion@gmail.com': 'https://sites.google.com/view/umbral-mia',
+        // Agrega más cuando tengas
+    };
+
+    function handleCredentialResponse(response) {
+        const payload = parseJwt(response.credential);
+        const email = payload.email.toLowerCase();
+        
+        if (siteMap[email]) {
+            window.location.href = siteMap[email];
+        } else {
+            alert('Tu correo (' + email + ') no está registrado en Umbral.\nContacta a la academia.');
         }
+    }
 
-        const siteMap = {
-            // Alumna 1 (Mia) - agrega su email cuando lo tengas
-            'ch3rryn3gro@gmail.com': 'https://sites.google.com/view/umbral-mia',
-            
-            // Tu email para testing (redirige al site de Mia si te logueas con umbralformacion@gmail.com)
-            'umbralformacion@gmail.com': 'https://sites.google.com/view/umbral-mia',
-
-            // Slots para más alumnos
-            // 'alumno2@example.com': 'https://sites.google.com/view/otro-site',
-            // 'alumno3@example.com': 'https://sites.google.com/view/otro-site',
-            // 'alumno4@example.com': 'https://sites.google.com/view/otro-site',
-            // 'alumno5@example.com': 'https://sites.google.com/view/otro-site',
-        };
-
-        function handleCredentialResponse(response) {
-            const payload = parseJwt(response.credential);
-            const email = payload.email.toLowerCase();
-            
-            if (siteMap[email]) {
-                window.location.href = siteMap[email];
-            } else {
-                alert('Tu correo (' + email + ') no está registrado en Umbral.\nContacta a la academia.');
-            }
-        }
-
-        function parseJwt(token) {
-            const base64Url = token.split('.')[1];
-            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-            }).join(''));
-            return JSON.parse(jsonPayload);
-        }
-    </script>
-</body>
-</html>
-
-
+    function parseJwt(token) {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonPayload);
+    }
+</script>
