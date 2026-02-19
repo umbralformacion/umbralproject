@@ -63,11 +63,11 @@
     <script>
         window.onload = function() {
             google.accounts.id.initialize({
-                client_id: 'TU_CLIENT_ID.apps.googleusercontent.com',  // ← Pon tu Client ID aquí (paso clave abajo)
+                client_id: '851862437693-l8fh38qhljlaceait1o0cc52m1ofkg4i.apps.googleusercontent.com',
                 callback: handleCredentialResponse,
                 auto_select: true
             });
-            google.accounts.id.prompt();
+            google.accounts.id.prompt(); // Intenta login automático si ya estás logueado en Google
         };
 
         function handleSignIn() {
@@ -75,20 +75,16 @@
         }
 
         const siteMap = {
-            // Alumna 1 (Mia) - link ya puesto, solo agrega su email cuando lo tengas
+            // Alumna 1 (Mia) - agrega su email cuando lo tengas
             // 'mia@example.com': 'https://sites.google.com/view/umbral-mia',
-            // 'umbralformacion@gmail.com': 'https://sites.google.com/view/umbral-mia'
+            
+            // Tu email para testing (redirige al site de Mia si te logueas con umbralformacion@gmail.com)
+            'umbralformacion@gmail.com': 'https://sites.google.com/view/umbral-mia',
 
-            // Slot 2
+            // Slots para más alumnos
             // 'alumno2@example.com': 'https://sites.google.com/view/otro-site',
-
-            // Slot 3
             // 'alumno3@example.com': 'https://sites.google.com/view/otro-site',
-
-            // Slot 4
             // 'alumno4@example.com': 'https://sites.google.com/view/otro-site',
-
-            // Slot 5
             // 'alumno5@example.com': 'https://sites.google.com/view/otro-site',
         };
 
@@ -99,20 +95,18 @@
             if (siteMap[email]) {
                 window.location.href = siteMap[email];
             } else {
-                alert('Tu correo no está registrado en Umbral.\nContacta a la academia.');
+                alert('Tu correo (' + email + ') no está registrado en Umbral.\nContacta a la academia.');
             }
         }
 
         function parseJwt(token) {
             const base64Url = token.split('.')[1];
             const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
+            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
                 return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
             }).join(''));
             return JSON.parse(jsonPayload);
         }
     </script>
 </body>
-
 </html>
-
