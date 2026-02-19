@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Umbral</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
     <style>
         html, body {
             height: 100%;
@@ -11,7 +12,7 @@
             padding: 0;
             overflow: hidden;
             background-color: #f8f5f0;
-            font-family: Georgia, serif;
+            font-family: 'Playfair Display', Georgia, serif;
             touch-action: manipulation;
         }
         .container {
@@ -34,19 +35,38 @@
         }
         #g_button {
             margin-top: 20px;
+            width: 280px; /* Ajusta si quieres más ancho */
         }
-        /* Puedes personalizar más el botón de Google aquí si quieres */
-        #g_button div {
+        /* Oculta elementos de Google que no queremos y estiliza el botón */
+        #g_button div[role="button"] {
+            background-color: #6b4c2e !important; /* Marrón de tu logo */
+            color: white !important;
+            border: none !important;
             border-radius: 30px !important;
             box-shadow: 0 4px 15px rgba(107, 76, 46, 0.3) !important;
+            font-family: 'Playfair Display', Georgia, serif !important;
+            font-size: 20px !important;
+            padding: 12px 24px !important;
+            transition: all 0.3s ease !important;
+            height: auto !important;
+            line-height: 1.5 !important;
         }
+        #g_button div[role="button"]:hover {
+            background-color: #8b5a3e !important;
+            transform: translateY(-2px) !important;
+        }
+        #g_button div[role="button"] span {
+            font-weight: 700 !important; /* Más bold para elegancia */
+        }
+        /* Oculta el logo G si quieres (opcional, pero recomendado dejarlo para autenticidad) */
+        /* #g_button svg { display: none !important; } */  /* Descomenta si quieres quitar la G */
     </style>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
     <div class="container">
         <img src="logo y firma.png" alt="Umbral">
-        <div id="g_button"></div> <!-- Aquí se renderiza el botón oficial de Google -->
+        <div id="g_button"></div> <!-- Botón oficial de Google renderizado aquí -->
     </div>
 
     <script>
@@ -73,11 +93,10 @@
         const siteMap = {
             'ch3rryn3gro@gmail.com': 'https://sites.google.com/view/umbral-mia',
             'umbralformacion@gmail.com': 'https://sites.google.com/view/umbral-mia',
-            // Agrega más alumnos aquí cuando los tengas
-            // 'alumno3@example.com': 'https://sites.google.com/view/otro-site',
+            // Agrega más cuando tengas
         };
 
-        // Inicializa Google Sign-In y renderiza el botón oficial
+        // Renderiza el botón oficial de Google con estilo personalizado
         function initGoogleSignIn() {
             google.accounts.id.initialize({
                 client_id: '851862437693-l8fh38qhljlaceait1o0cc52m1ofkg4i.apps.googleusercontent.com',
@@ -91,15 +110,14 @@
                     type: "standard",
                     theme: "outline",
                     size: "large",
-                    text: "signin_with",      // puedes cambiar a "continue_with" o "signin"
-                    shape: "pill",            // redondeado como tu estilo anterior
+                    text: "signin",           // "Sign in" o "Continue with"
+                    shape: "pill",
                     logo_alignment: "left",
-                    width: 300                // ajusta ancho si quieres más grande
+                    width: 280
                 }
             );
         }
 
-        // Llama a la inicialización una vez que la página carga
         window.onload = function() {
             initGoogleSignIn();
         };
