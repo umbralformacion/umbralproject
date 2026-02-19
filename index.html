@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Umbral</title>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #f8f5f0;
+            font-family: Georgia, serif;
+            touch-action: manipulation;
+        }
+        .container {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 20px;
+            box-sizing: border-box;
+        }
+        img {
+            max-width: 70vw;
+            max-height: 60vh;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            margin-bottom: 40px;
+        }
+        button {
+            padding: 14px 32px;
+            background-color: #6b4c2e;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 20px;
+            font-family: Georgia, serif;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(107, 76, 46, 0.3);
+        }
+        button:hover {
+            background-color: #8b5a3e;
+            transform: translateY(-2px);
+        }
+        button:active {
+            transform: translateY(1px);
+        }
+    </style>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+    <div class="container">
+        <img src="umbral-logo.png" alt="Umbral">
+        <button onclick="handleSignIn()">Ingresar</button>
+    </div>
+
+    <script>
+        window.onload = function() {
+            google.accounts.id.initialize({
+                client_id: 'TU_CLIENT_ID.apps.googleusercontent.com',  // ← Pon tu Client ID aquí (paso clave abajo)
+                callback: handleCredentialResponse,
+                auto_select: true
+            });
+            google.accounts.id.prompt();
+        };
+
+        function handleSignIn() {
+            google.accounts.id.prompt();
+        }
+
+        const siteMap = {
+            // Alumna 1 (Mia) - link ya puesto, solo agrega su email cuando lo tengas
+            // 'mia@example.com': 'https://sites.google.com/view/umbral-mia',
+
+            // Slot 2
+            // 'alumno2@example.com': 'https://sites.google.com/view/otro-site',
+
+            // Slot 3
+            // 'alumno3@example.com': 'https://sites.google.com/view/otro-site',
+
+            // Slot 4
+            // 'alumno4@example.com': 'https://sites.google.com/view/otro-site',
+
+            // Slot 5
+            // 'alumno5@example.com': 'https://sites.google.com/view/otro-site',
+        };
+
+        function handleCredentialResponse(response) {
+            const payload = parseJwt(response.credential);
+            const email = payload.email.toLowerCase();
+            
+            if (siteMap[email]) {
+                window.location.href = siteMap[email];
+            } else {
+                alert('Tu correo no está registrado en Umbral.\nContacta a la academia.');
+            }
+        }
+
+        function parseJwt(token) {
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            return JSON.parse(jsonPayload);
+        }
+    </script>
+</body>
+</html>
