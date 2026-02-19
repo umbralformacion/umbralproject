@@ -25,34 +25,27 @@
             padding: 0 20px;
             box-sizing: border-box;
         }
+        .logo-wrapper {
+            cursor: pointer;
+            transition: all 0.2s ease;
+            padding: 20px;
+            border-radius: 20px;
+            user-select: none;
+        }
+        .logo-wrapper:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(107, 76, 46, 0.3);
+        }
+        .logo-wrapper:active {
+            transform: scale(0.98);
+            box-shadow: 0 5px 15px rgba(107, 76, 46, 0.4);
+        }
         img {
             max-width: 70vw;
-            max-height: 60vh;
+            max-height: 70vh;
             width: auto;
             height: auto;
             object-fit: contain;
-            margin-bottom: 40px;
-        }
-        .custom-button {
-            padding: 14px 32px;
-            background-color: #6b4c2e;
-            color: white;
-            border: none;
-            border-radius: 30px;
-            cursor: pointer;
-            font-size: 20px;
-            font-family: 'Playfair Display', Georgia, serif;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(107, 76, 46, 0.3);
-            position: relative;
-            z-index: 2;
-        }
-        .custom-button:hover {
-            background-color: #8b5a3e;
-            transform: translateY(-2px);
-        }
-        .custom-button:active {
-            transform: translateY(1px);
         }
         #g_button_hidden {
             position: absolute;
@@ -66,8 +59,9 @@
 </head>
 <body>
     <div class="container">
-        <img src="logo y firma.png" alt="Umbral">
-        <button class="custom-button" onclick="triggerGoogleSignIn()">Ingresar</button>
+        <div class="logo-wrapper" onclick="triggerGoogleSignIn()">
+            <img src="logo y firma.png" alt="Umbral">
+        </div>
         <div id="g_button_hidden"></div> <!-- Botón oculto de Google -->
     </div>
 
@@ -77,7 +71,7 @@
         function handleCredentialResponse(response) {
             const payload = parseJwt(response.credential);
             const email = payload.email.toLowerCase();
-            
+           
             if (siteMap[email]) {
                 window.location.href = siteMap[email];
             } else {
@@ -104,9 +98,8 @@
             google.accounts.id.initialize({
                 client_id: '851862437693-l8fh38qhljlaceait1o0cc52m1ofkg4i.apps.googleusercontent.com',
                 callback: handleCredentialResponse,
-                auto_select: false
+                auto_select: false  // Cambiado a false para no auto-iniciar si no hay sesión
             });
-
             google.accounts.id.renderButton(
                 document.getElementById("g_button_hidden"),
                 {
@@ -118,21 +111,19 @@
                     width: 280
                 }
             );
-
-            // Guardamos la referencia al botón real de Google
             googleButtonElement = document.querySelector('#g_button_hidden div[role="button"]');
         }
 
         function triggerGoogleSignIn() {
             if (!googleButtonElement) {
-                initGoogleSignIn(); // Inicializa si aún no se hizo
-                setTimeout(triggerGoogleSignIn, 500); // Reintenta después de render
+                initGoogleSignIn();
+                setTimeout(triggerGoogleSignIn, 300); // Reintenta breve si no está listo
                 return;
             }
             googleButtonElement.click(); // Simula clic en el botón oculto de Google
         }
 
-        // Inicializa al cargar la página (necesario para que esté listo)
+        // Inicializa al cargar
         window.onload = function() {
             initGoogleSignIn();
         };
