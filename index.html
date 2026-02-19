@@ -71,7 +71,7 @@
             client_id: '851862437693-l8fh38qhljlaceait1o0cc52m1ofkg4i.apps.googleusercontent.com',
             callback: handleCredentialResponse,
             auto_select: false  // Desactiva auto-select automático
-            // Opcional: use_fedcm_for_prompt: false  // Si quieres forzar flujo legacy y evitar FedCM cooldowns
+            use_fedcm_for_prompt: false  // ← Esta línea evita que FedCM bloquee el prompt
         });
     }
 
@@ -108,3 +108,4 @@
         return JSON.parse(jsonPayload);
     }
 </script>
+
